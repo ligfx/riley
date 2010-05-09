@@ -83,7 +83,6 @@ c16_new_from_file (FILE *fp)
   image = c16_new (is_565? C16_565 : C16_555);
   
   assert (fread (&count, 1, 2, fp) == 2);
-  printf ("Count: %i\n", count);
   c16_set_number_of_sprites (image, count);
   
   for (int i = 0; i < count; ++i) {
@@ -95,13 +94,9 @@ c16_new_from_file (FILE *fp)
     int j;
     
     assert (fread (&first_line, 1, 4, fp) == 4);
-    //printf ("First line @ %i\n", first_line);
     assert (fread (&width, 1, 2, fp) == 2);
-    //printf ("Width: %i\n", width);
     assert (fread (&height, 1, 2, fp) == 2);
-    //printf ("Height: %i\n", height);
     
-    //printf ("Malloc'ing %i bytes\n", sizeof(uint16_t) * width * height);
     data = malloc (width * height * 2);
     data_pos = (uint16_t*)data;
     assert (data);
@@ -110,24 +105,19 @@ c16_new_from_file (FILE *fp)
     offsets[0] = first_line;
     for (j = 1; j < height; ++j) {
       assert (fread (&offsets[j], 1, 4, fp) == 4);
-      //printf ("Line %i @ %i\n", j, offsets[j]); 
     }
     
     long mark = ftell (fp);
     
     for (j = 0; j < height; ++j) {
       fseek (fp, offsets[j], SEEK_SET);
-      //printf ("Seeking to %i\n", offsets[j]);
       while (true) {
         uint16_t tag;
         assert (fread (&tag, 1, 2, fp) == 2);
         if (tag == 0) break;
         bool color = tag & 0x0001;
-        //printf ("Color? %s\n", color? "yes" : "no");
         uint16_t length = (tag & 0xFFFE) >> 1;
-        //printf ("Length: %i\n", length);
         if (color) {
-          //printf ("Reading color\n");
           assert (fread (data_pos, 1, length * 2, fp) == length * 2);
         } else {
           memset (data_pos, 0, length * 2);
@@ -140,6 +130,52 @@ c16_new_from_file (FILE *fp)
     c16_set_sprite (image, i, sprite);
     
     fseek (fp, mark, SEEK_SET);
+  }
+  
+  fclose (fp);
+  
+  return image;
+}
+
+C16*
+s16_new_from_file (FILE *fp)
+{
+  C16* image;
+
+  uint32_t header;
+  bool is_565;
+  uint16_t count;
+  
+  assert (fread (&header, 1, 4, fp) == 4);
+  
+  is_565 = header & 0x1;
+  assert (header ^ 0x2); // Is an S16 File; not C16
+  
+  image = c16_new (is_565? C16_565 : C16_555);
+  
+  assert (fread (&count, 1, 2, fp) == 2);
+  c16_set_number_of_sprites (image, count);
+  
+  for (int i = 0; i < count; ++i) {
+    C16Sprite sprite;
+    uint32_t first_line;
+    uint16_t width, height;
+    char *data = NULL;
+    
+    assert (fread (&first_line, 1, 4, fp) == 4);
+    assert (fread (&width, 1, 2, fp) == 2);
+    assert (fread (&height, 1, 2, fp) == 2);
+    
+    data = malloc (width * height * 2);
+    assert (data);
+    
+    long mark = ftell (fp);
+    fseek (fp, first_line, SEEK_SET);
+    assert (fread (data, 1, width * height * 2, fp) == width * height * 2);
+    fseek (fp, mark, SEEK_SET);
+    
+    sprite = c16_sprite_make (width, height, (uint16_t*)data);
+    c16_set_sprite (image, i, sprite);
   }
   
   fclose (fp);

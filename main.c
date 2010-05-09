@@ -11,24 +11,62 @@
 #include <string.h>
 
 int main() {
-  FILE *fp = fopen ("test.c16", "r");
-  assert (fp);
-  C16 *image = c16_new_from_file (fp);
-  assert (image);
+/*
+  In Ronnie, this might be:
+  
+  sdl: init
+  sdl: vdeo 100 100 32 0
+  sdl: blit c16: sdl_ c16: file "test.c16" 2
+  sdl: flip
+  sdl: wait 2000
+  sdl: quit
+*/
+
+  FILE *fp;
+  C16 *c16, *s16;
+  
+  {
+    fp = fopen ("test.c16", "r");
+    assert (fp);
+    c16 = c16_new_from_file (fp);
+    assert (c16);
+  }
+  {
+    fp = fopen ("test.s16", "r");
+    assert (fp);
+    s16 = s16_new_from_file (fp);
+    assert (s16);
+  }
   
   assert (SDL_Init (SDL_INIT_VIDEO) == 0);
   SDL_Surface *screen = SDL_SetVideoMode (100, 100, 32, 0);
   assert (screen);
   
-  SDL_Surface *sprite = c16_get_sprite_sdl (image, 2);
-  assert (sprite);
+  SDL_Surface *sprite;
   
-  SDL_BlitSurface (sprite, NULL, screen, NULL);
-  SDL_Flip (screen);
+  {
+    sprite = c16_get_sprite_sdl (c16, 2);
+    assert (sprite);
+    
+    SDL_BlitSurface (sprite, NULL, screen, NULL);
+    SDL_Flip (screen);
+    
+    SDL_Delay (2000);
+    
+    SDL_FreeSurface (sprite);
+  }
+  {  
+    sprite = c16_get_sprite_sdl (s16, 0);
+    assert (sprite);
+    
+    SDL_BlitSurface (sprite, NULL, screen, NULL);
+    SDL_Flip (screen);
+    
+    SDL_Delay (2000);
+    
+    SDL_FreeSurface (sprite);
+  }
   
-  SDL_Delay (2000);
-  
-  SDL_FreeSurface (sprite);
   SDL_Quit ();
   return 0;
 }

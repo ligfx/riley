@@ -59,6 +59,7 @@ RILEY_API uint16_t* c16_sprite_get_data (C16Sprite);
 // ~ Helpers ~
 
 RILEY_API C16* c16_new_from_file (FILE*);
+RILEY_API C16* s16_new_from_file (FILE*);
 
 #ifdef __cplusplus
 }
