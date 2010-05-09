@@ -24,6 +24,7 @@ int main() {
 
   FILE *fp;
   C16 *c16, *s16;
+  BLK *blk;
   
   {
     fp = fopen ("test.c16", "r");
@@ -37,33 +38,33 @@ int main() {
     s16 = s16_new_from_file (fp);
     assert (s16);
   }
+  {
+    fp = fopen ("test.blk", "r");
+    assert (fp);
+    blk = blk_new_from_file (fp);
+    assert (blk);
+  }
   
   assert (SDL_Init (SDL_INIT_VIDEO) == 0);
-  SDL_Surface *screen = SDL_SetVideoMode (100, 100, 32, 0);
+  SDL_Surface *screen = SDL_SetVideoMode (800, 800, 32, 0);
   assert (screen);
   
   SDL_Surface *sprite;
   
-  {
-    sprite = c16_get_sprite_sdl (c16, 2);
+  for (int i = 0; i < 3; ++i) {
+    switch (i) {
+    case 0:
+      sprite = c16_get_sprite_sdl (c16, 2); break;
+    case 1:
+      sprite = c16_get_sprite_sdl (s16, 0); break;
+    case 2:
+      sprite = blk_get_sdl (blk); break;
+    }
     assert (sprite);
     
     SDL_BlitSurface (sprite, NULL, screen, NULL);
     SDL_Flip (screen);
-    
     SDL_Delay (2000);
-    
-    SDL_FreeSurface (sprite);
-  }
-  {  
-    sprite = c16_get_sprite_sdl (s16, 0);
-    assert (sprite);
-    
-    SDL_BlitSurface (sprite, NULL, screen, NULL);
-    SDL_Flip (screen);
-    
-    SDL_Delay (2000);
-    
     SDL_FreeSurface (sprite);
   }
   

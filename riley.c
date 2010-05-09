@@ -182,3 +182,67 @@ s16_new_from_file (FILE *fp)
   
   return image;
 }
+
+BLK*
+blk_new (C16Format format, uint16_t width, uint16_t height, uint16_t *data)
+{
+  BLK *blk = malloc (sizeof (BLK)); {
+    blk->format = format;
+    blk->width = width;
+    blk->height = height;
+    blk->data = data;
+  }
+  return blk;
+}
+
+BLK*
+blk_new_from_file (FILE *fp)
+{
+  BLK *blk = NULL;
+  
+  uint32_t header;
+  bool is_565;
+  uint16_t bgwidth, bgheight, count;
+  char* data;
+  int i;
+  
+  assert (fread (&header, 1, 4, fp) == 4);
+  
+  is_565 = header & 0x1;
+  assert (header ^ 0x2); // Is an S16 File; not C16
+  
+  assert (fread (&bgwidth, 1, 2, fp) == 2);
+  assert (fread (&bgheight, 1, 2, fp) == 2);
+  assert (fread (&count, 1, 2, fp) == 2);
+  
+  uint32_t offsets[count];
+  for (i = 0; i < count; ++i) {
+    uint32_t off;
+    assert (fread (&off, 1, 4, fp) == 4);
+    offsets[i] = off + 4; // Because of the extra width and height in header
+    
+    uint16_t width, height;
+    assert (fread (&width, 1, 2, fp) == 2);
+    assert (fread (&height, 1, 2, fp) == 2);
+    assert (width == 128);
+    assert (height == 128);
+  }
+  
+  data = malloc (sizeof (uint16_t) * bgwidth * 128 * bgheight * 128);
+  /*
+    So sprites are arranged top-to-bottom, left-to-right. That is, sprite 1 is
+    at (0,0) and sprite 2 is at (0, 1). Complicated? Yes
+  */
+  for (i = 0; i < count; ++i) { // For each sprite
+    long mark = ftell (fp);
+    fseek (fp, offsets[i], SEEK_SET);
+    
+    for (int j = 0; j < 128; ++j) // For each pixel-row
+      assert (fread (data + j * bgwidth * 256 + (i % bgheight) * 128 * bgwidth * 256 + (i / bgheight) * 256, 1, 256, fp) == 256);
+    
+    fseek (fp, mark, SEEK_SET);
+  }
+  
+  blk = blk_new (is_565?C16_565:C16_555, bgwidth*128, bgheight*128, (uint16_t*)data);
+  return blk;
+}

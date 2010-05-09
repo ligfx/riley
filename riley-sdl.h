@@ -10,6 +10,7 @@ extern "C" {
 
 
 RILEY_API SDL_Surface* c16_get_sprite_sdl (C16*, uint16_t);
+RILEY_API SDL_Surface* blk_get_sdl (BLK*);
 
 #ifdef __cplusplus
 }
