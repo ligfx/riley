@@ -27,6 +27,12 @@ c16_sprite_make (uint16_t width, uint16_t height, uint16_t* data)
   return sprite;
 }
 
+uint16_t
+c16_get_number_of_sprites (C16 *image)
+{
+  return image->count;
+}
+
 void
 c16_set_number_of_sprites (C16 *image, uint16_t count)
 {
@@ -101,11 +107,10 @@ c16_new_from_file (FILE *fp)
     data_pos = (uint16_t*)data;
     assert (data);
     
-    uint16_t offsets[height];
+    uint32_t offsets[height];
     offsets[0] = first_line;
-    for (j = 1; j < height; ++j) {
+    for (j = 1; j < height; ++j)
       assert (fread (&offsets[j], 1, 4, fp) == 4);
-    }
     
     long mark = ftell (fp);
     

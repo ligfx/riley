@@ -23,7 +23,8 @@ int main() {
 */
 
   FILE *fp;
-  C16 *c16, *s16;
+  C16 *c16;
+  C16 *s16;
   BLK *blk;
   
   {
@@ -46,12 +47,12 @@ int main() {
   }
   
   assert (SDL_Init (SDL_INIT_VIDEO) == 0);
-  SDL_Surface *screen = SDL_SetVideoMode (800, 800, 32, 0);
+  SDL_Surface *screen = SDL_SetVideoMode (100, 100, 32, 0);
   assert (screen);
   
   SDL_Surface *sprite;
   
-  for (int i = 0; i < 3; ++i) {
+  /*for (int i = 0; i < 3; ++i) {
     switch (i) {
     case 0:
       sprite = c16_get_sprite_sdl (c16, 2); break;
@@ -65,6 +66,17 @@ int main() {
     SDL_BlitSurface (sprite, NULL, screen, NULL);
     SDL_Flip (screen);
     SDL_Delay (2000);
+    SDL_FreeSurface (sprite);
+  }*/
+  
+  for (int i = 0; i < c16_get_number_of_sprites (c16); ++i)
+  {
+    sprite = c16_get_sprite_sdl (c16, i);
+    assert (sprite);
+    
+    SDL_BlitSurface (sprite, NULL, screen, NULL);
+    SDL_Flip (screen);
+    SDL_Delay (100);
     SDL_FreeSurface (sprite);
   }
   
