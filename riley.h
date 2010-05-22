@@ -24,57 +24,57 @@
 extern "C" {
 #endif
 
-typedef enum C16Format {
+typedef enum c16_format_t {
 	C16_555,
 	C16_565,
-} C16Format;
+} c16_format_t;
 
-typedef struct C16Sprite {
+typedef struct c16_sprite_t {
   uint16_t width, height;
   uint16_t* data;
-} C16Sprite;
+} c16_sprite_t;
 
-typedef struct C16 {
-  C16Format format;
+typedef struct c16_t {
+  c16_format_t format;
   uint16_t count;
-  C16Sprite *sprites;
-} C16;
+  c16_sprite_t *sprites;
+} c16_t;
 
-RILEY_API C16* c16_new(C16Format);
+RILEY_API c16_t* c16_new (c16_format_t);
 
-RILEY_API C16Format c16_get_format (C16*);
+RILEY_API c16_format_t c16_get_format (c16_t*);
 
-RILEY_API uint16_t c16_get_number_of_sprites (C16*);
-RILEY_API void c16_set_number_of_sprites (C16*, uint16_t);
+RILEY_API uint16_t c16_get_number_of_sprites (c16_t*);
+RILEY_API void c16_set_number_of_sprites (c16_t*, uint16_t);
 
-RILEY_API C16Sprite c16_get_sprite (C16*, uint16_t);
-RILEY_API void c16_set_sprite (C16*, uint16_t, C16Sprite);
+RILEY_API c16_sprite_t c16_get_sprite (c16_t*, uint16_t);
+RILEY_API void c16_set_sprite (c16_t*, uint16_t, c16_sprite_t);
 
-RILEY_API C16Sprite c16_sprite_make (uint16_t width, uint16_t height, uint16_t* data);
-RILEY_API uint16_t c16_sprite_get_width (C16Sprite);
-RILEY_API uint16_t c16_sprite_get_height (C16Sprite);
+RILEY_API c16_sprite_t c16_sprite_make (uint16_t width, uint16_t height, uint16_t* data);
+RILEY_API uint16_t c16_sprite_get_width (c16_sprite_t);
+RILEY_API uint16_t c16_sprite_get_height (c16_sprite_t);
 
-RILEY_API uint16_t* c16_sprite_get_data (C16Sprite);
+RILEY_API uint16_t* c16_sprite_get_data (c16_sprite_t);
 
-typedef struct BLK {
-  C16Format format;
+typedef struct blk_t {
+  c16_format_t format;
   uint16_t width, height;
   uint16_t* data;
-} BLK;
+} blk_t;
 
-RILEY_API BLK* blk_new(C16Format, uint16_t width, uint16_t height, uint16_t *data);
-RILEY_API C16Format blk_get_format (BLK*);
-RILEY_API uint16_t blk_get_width (BLK*);
-RILEY_API uint16_t blk_get_height (BLK*);
-RILEY_API uint16_t* blk_get_data (BLK*);
+RILEY_API blk_t* blk_new(c16_format_t, uint16_t width, uint16_t height, uint16_t *data);
+RILEY_API c16_format_t blk_get_format (blk_t*);
+RILEY_API uint16_t blk_get_width (blk_t*);
+RILEY_API uint16_t blk_get_height (blk_t*);
+RILEY_API uint16_t* blk_get_data (blk_t*);
 
 // ~ Helpers ~
 
-RILEY_API C16* c16_new_from_file (FILE*);
+RILEY_API c16_t* c16_new_from_file (FILE*);
 //RILEY_API void c16_write_to_file (C16*, FILE*);
-RILEY_API C16* s16_new_from_file (FILE*);
+RILEY_API c16_t* s16_new_from_file (FILE*);
 //RILEY_API void s16_write_to_file (C16*, FILE*);
-RILEY_API BLK* blk_new_from_file (FILE*);
+RILEY_API blk_t* blk_new_from_file (FILE*);
 //RILEY_API void blk_write_to_file (BLK*, FILE*);
 
 #ifdef __cplusplus

@@ -3,10 +3,10 @@
 #include <assert.h>
 #include <stdbool.h>
 
-C16*
-c16_new (C16Format format)
+c16_t*
+c16_new (c16_format_t format)
 {
-  C16 *image = malloc (sizeof (C16)); {
+  c16_t *image = malloc (sizeof (c16_t)); {
     image->format = format;
     image->count = 0;
     image->sprites = NULL;
@@ -14,68 +14,68 @@ c16_new (C16Format format)
   return image;
 }
 
-C16Format
-c16_get_format (C16* image)
+c16_format_t
+c16_get_format (c16_t* image)
 {
   return image->format;
 }
 
-C16Sprite
+c16_sprite_t
 c16_sprite_make (uint16_t width, uint16_t height, uint16_t* data)
 {
-  C16Sprite sprite = { width, height, data };
+  c16_sprite_t sprite = { width, height, data };
   return sprite;
 }
 
 uint16_t
-c16_get_number_of_sprites (C16 *image)
+c16_get_number_of_sprites (c16_t *image)
 {
   return image->count;
 }
 
 void
-c16_set_number_of_sprites (C16 *image, uint16_t count)
+c16_set_number_of_sprites (c16_t *image, uint16_t count)
 {
   image->count = count;
-  image->sprites = realloc (image->sprites, count * sizeof (C16Sprite));
+  image->sprites = realloc (image->sprites, count * sizeof (c16_sprite_t));
 }
 
-C16Sprite
-c16_get_sprite (C16 *image, uint16_t index)
+c16_sprite_t
+c16_get_sprite (c16_t *image, uint16_t index)
 {
   assert (index < image->count);
   return image->sprites[index];
 }
 
 void
-c16_set_sprite (C16 *image, uint16_t index, C16Sprite sprite)
+c16_set_sprite (c16_t *image, uint16_t index, c16_sprite_t sprite)
 {
   assert (index < image->count);
   image->sprites[index] = sprite;
 }
 
 uint16_t*
-c16_sprite_get_data (C16Sprite sprite)
+c16_sprite_get_data (c16_sprite_t sprite)
 {
   return sprite.data;
 }
 
 uint16_t
-c16_sprite_get_width (C16Sprite sprite)
+c16_sprite_get_width (c16_sprite_t sprite)
 {
   return sprite.width;
 }
 
 uint16_t
-c16_sprite_get_height (C16Sprite sprite)
+c16_sprite_get_height (c16_sprite_t sprite)
 {
   return sprite.height;
 }
 
-C16*
+c16_t*
 c16_new_from_file (FILE *fp)
 {
-  C16* image;
+  c16_t* image;
 
   uint32_t header;
   bool is_565;
@@ -84,7 +84,7 @@ c16_new_from_file (FILE *fp)
   assert (fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header & 0x2); // Is a C16 File
+  assert (header & 0x2); // Is a c16_t File
   
   image = c16_new (is_565? C16_565 : C16_555);
   
@@ -92,7 +92,7 @@ c16_new_from_file (FILE *fp)
   c16_set_number_of_sprites (image, count);
   
   for (int i = 0; i < count; ++i) {
-    C16Sprite sprite;
+    c16_sprite_t sprite;
     uint32_t first_line;
     uint16_t width, height;
     char *data = NULL;
@@ -142,10 +142,10 @@ c16_new_from_file (FILE *fp)
   return image;
 }
 
-C16*
+c16_t*
 s16_new_from_file (FILE *fp)
 {
-  C16* image;
+  c16_t* image;
 
   uint32_t header;
   bool is_565;
@@ -154,7 +154,7 @@ s16_new_from_file (FILE *fp)
   assert (fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header ^ 0x2); // Is an S16 File; not C16
+  assert (header ^ 0x2); // Is an S16 File; not c16_t
   
   image = c16_new (is_565? C16_565 : C16_555);
   
@@ -162,7 +162,7 @@ s16_new_from_file (FILE *fp)
   c16_set_number_of_sprites (image, count);
   
   for (int i = 0; i < count; ++i) {
-    C16Sprite sprite;
+    c16_sprite_t sprite;
     uint32_t first_line;
     uint16_t width, height;
     char *data = NULL;
@@ -188,10 +188,10 @@ s16_new_from_file (FILE *fp)
   return image;
 }
 
-BLK*
-blk_new (C16Format format, uint16_t width, uint16_t height, uint16_t *data)
+blk_t*
+blk_new (c16_format_t format, uint16_t width, uint16_t height, uint16_t *data)
 {
-  BLK *blk = malloc (sizeof (BLK)); {
+  blk_t *blk = malloc (sizeof (blk_t)); {
     blk->format = format;
     blk->width = width;
     blk->height = height;
@@ -200,10 +200,10 @@ blk_new (C16Format format, uint16_t width, uint16_t height, uint16_t *data)
   return blk;
 }
 
-BLK*
+blk_t*
 blk_new_from_file (FILE *fp)
 {
-  BLK *blk = NULL;
+  blk_t *blk = NULL;
   
   uint32_t header;
   bool is_565;
@@ -214,7 +214,7 @@ blk_new_from_file (FILE *fp)
   assert (fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header ^ 0x2); // Is an S16 File; not C16
+  assert (header ^ 0x2); // Is an S16 File; not c16_t
   
   assert (fread (&bgwidth, 1, 2, fp) == 2);
   assert (fread (&bgheight, 1, 2, fp) == 2);
@@ -252,26 +252,26 @@ blk_new_from_file (FILE *fp)
   return blk;
 }
 
-C16Format
-blk_get_format (BLK *blk)
+c16_format_t
+blk_get_format (blk_t *blk)
 {
   return blk->format;
 }
 
 uint16_t
-blk_get_height (BLK *blk)
+blk_get_height (blk_t *blk)
 {
   return blk->height;
 }
 
 uint16_t
-blk_get_width (BLK *blk)
+blk_get_width (blk_t *blk)
 {
   return blk->width;
 }
 
 uint16_t*
-blk_get_data (BLK *blk)
+blk_get_data (blk_t *blk)
 {
   return blk->data;
 }

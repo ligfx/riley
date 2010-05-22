@@ -2,10 +2,10 @@
 #include "riley-sdl.h"
 
 SDL_Surface*
-c16_get_sprite_sdl (C16 *image, uint16_t index)
+c16_get_sprite_sdl (c16_t *image, uint16_t index)
 {
-  C16Sprite sprite = c16_get_sprite (image, index);
-  C16Format format = c16_get_format (image);
+  c16_sprite_t sprite = c16_get_sprite (image, index);
+  c16_format_t format = c16_get_format (image);
   uint16_t width, height, *data;
   width = c16_sprite_get_width (sprite);
   height = c16_sprite_get_height (sprite);
@@ -25,9 +25,9 @@ c16_get_sprite_sdl (C16 *image, uint16_t index)
 }
 
 SDL_Surface*
-blk_get_sdl (BLK *image)
+blk_get_sdl (blk_t *image)
 {
-  C16Format format = image->format;
+  c16_format_t format = image->format;
   uint16_t width, height, *data;
   width = image->width;
   height = image->height;

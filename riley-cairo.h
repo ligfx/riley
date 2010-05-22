@@ -8,8 +8,8 @@
 extern "C" {
 #endif
 
-RILEY_API cairo_surface_t* c16_get_sprite_cairo (C16*, uint16_t);
-RILEY_API cairo_surface_t* blk_get_cairo (BLK*);
+RILEY_API cairo_surface_t* c16_get_sprite_cairo (c16_t*, uint16_t);
+RILEY_API cairo_surface_t* blk_get_cairo (blk_t*);
 
 #ifdef __cplusplus
 }

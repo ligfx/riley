@@ -6,10 +6,10 @@
 #include "riley-cairo.h"
 
 cairo_surface_t*
-c16_get_sprite_cairo (C16 *c16, uint16_t index)
+c16_get_sprite_cairo (c16_t *c16, uint16_t index)
 {
-  C16Sprite sprite = c16_get_sprite (c16, 0);
-  C16Format format = c16_get_format (c16);
+  c16_sprite_t sprite = c16_get_sprite (c16, 0);
+  c16_format_t format = c16_get_format (c16);
 
 	int height = c16_sprite_get_height (sprite);
 	int width = c16_sprite_get_width (sprite);
@@ -43,7 +43,7 @@ c16_get_sprite_cairo (C16 *c16, uint16_t index)
 
 void foo (uint16_t pixel, uint32_t *ptr) {
   // TODO: This is dependent on endianness
-//  if (format == C16_565) {
+//  if (format == c16_t_565) {
 
   
 /*    *(ptr++) = (pixel & 0x001f) << 3; // Blue
@@ -58,9 +58,9 @@ void foo (uint16_t pixel, uint32_t *ptr) {
 }
 
 cairo_surface_t*
-blk_get_cairo (BLK *blk)
+blk_get_cairo (blk_t *blk)
 {
-  C16Format format = blk_get_format (blk);
+  c16_format_t format = blk_get_format (blk);
 
 	int height = blk_get_height (blk);
 	int width = blk_get_width (blk);
@@ -74,7 +74,6 @@ blk_get_cairo (BLK *blk)
 	for (int i = 0; i < height; ++i) {
 	  uint32_t *ptr = data + (i * stride / 4);
 	  for (int j = 0; j < width; ++j) {
-//	    printf (".");
       uint16_t pixel = blk_data[i*width + j];
       *(ptr++) =  ((pixel & 0x001f) << 3) | // blue
                  (((pixel & 0x07e0) >> 3) << 8) | // green
@@ -87,7 +86,7 @@ blk_get_cairo (BLK *blk)
 }
 
 int main () {
-  BLK *blk = NULL;
+  blk_t *blk = NULL;
   
   {
     FILE *fp = fopen ("test.blk", "r");

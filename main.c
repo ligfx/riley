@@ -23,9 +23,9 @@ int main() {
 */
 
   FILE *fp;
-  C16 *c16;
-  C16 *s16;
-  BLK *blk;
+  c16_t *c16;
+  c16_t *s16;
+  blk_t *blk;
   
   {
     fp = fopen ("test.c16", "r");
