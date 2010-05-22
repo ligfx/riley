@@ -63,9 +63,10 @@ typedef struct BLK {
 } BLK;
 
 RILEY_API BLK* blk_new(C16Format, uint16_t width, uint16_t height, uint16_t *data);
-RILEY_API uint16_t blk_get_width (BLK);
-RILEY_API uint16_t blk_get_height (BLK);
-RILEY_API uint16_t* blk_get_data (BLK);
+RILEY_API C16Format blk_get_format (BLK*);
+RILEY_API uint16_t blk_get_width (BLK*);
+RILEY_API uint16_t blk_get_height (BLK*);
+RILEY_API uint16_t* blk_get_data (BLK*);
 
 // ~ Helpers ~
 

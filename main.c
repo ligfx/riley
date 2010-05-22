@@ -18,7 +18,7 @@ int main() {
   sdl: vdeo 100 100 32 0
   sdl: blit c16: sdl_ c16: file "test.c16" 2
   sdl: flip
-  sdl: wait 2000
+  wait 2000
   sdl: quit
 */
 

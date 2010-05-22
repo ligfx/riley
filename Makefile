@@ -9,7 +9,7 @@ include: riley.h riley-sdl.h
 	@cp $^ include/riley
 
 main: main.o libriley.so libriley-sdl.so
-	@${CC} -g $^ -lSDL -L. -lriley -lriley-sdl -o $@ -Wl,-rpath,.
+	@${CC} -g $^ -lSDL -L. -lriley -lriley-sdl -o $@ -Wl,-rpath,. ${LDFLAGS}
 	@echo " LD $^ => $@"
 
 main.o: include main.c
@@ -17,11 +17,11 @@ main.o: include main.c
 	@echo " CC main.c => $@"
 
 libriley.so: riley.o
-	@${CC} -shared $^ -o $@
+	@${CC} -shared $^ -o $@ ${LDFLAGS}
 	@echo " LD $^ => $@"
 
 libriley-sdl.so: riley-sdl.o libriley.so
-	@${CC} -shared $^ -o $@ -L. -lriley
+	@${CC} -shared $^ -o $@ -L. -lriley ${LDFLAGS}
 	@echo " LD $^ => $@"
 
 %.o: %.c

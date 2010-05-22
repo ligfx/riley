@@ -251,3 +251,27 @@ blk_new_from_file (FILE *fp)
   blk = blk_new (is_565?C16_565:C16_555, bgwidth*128, bgheight*128, (uint16_t*)data);
   return blk;
 }
+
+C16Format
+blk_get_format (BLK *blk)
+{
+  return blk->format;
+}
+
+uint16_t
+blk_get_height (BLK *blk)
+{
+  return blk->height;
+}
+
+uint16_t
+blk_get_width (BLK *blk)
+{
+  return blk->width;
+}
+
+uint16_t*
+blk_get_data (BLK *blk)
+{
+  return blk->data;
+}
