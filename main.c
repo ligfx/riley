@@ -1,5 +1,5 @@
 #include <riley/riley.h>
-#include <riley/riley-sdl.h>
+#include <riley/sdl.h>
 
 #include <SDL/SDL.h>
 

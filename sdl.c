@@ -1,5 +1,5 @@
 #include "riley.h"
-#include "riley-sdl.h"
+#include "sdl.h"
 
 SDL_Surface*
 c16_get_sprite_sdl (c16_t *image, uint16_t index)

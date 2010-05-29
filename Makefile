@@ -3,7 +3,7 @@ CFLAGS +=-fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror
 
 all: libriley.so libriley-sdl.so include main
 
-include: riley.h riley-sdl.h
+include: riley.h sdl.h
 	@mkdir -p include/riley
 	@echo " CP $^ => include/riley/"
 	@cp $^ include/riley
@@ -20,7 +20,7 @@ libriley.so: riley.o
 	@${CC} -shared $^ -o $@ ${LDFLAGS}
 	@echo " LD $^ => $@"
 
-libriley-sdl.so: riley-sdl.o libriley.so
+libriley-sdl.so: sdl.o libriley.so
 	@${CC} -shared $^ -o $@ -L. -lriley ${LDFLAGS}
 	@echo " LD $^ => $@"
 
