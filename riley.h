@@ -53,7 +53,6 @@ RILEY_API void c16_set_sprite (c16_t*, uint16_t, c16_sprite_t);
 RILEY_API c16_sprite_t c16_sprite_make (uint16_t width, uint16_t height, uint16_t* data);
 RILEY_API uint16_t c16_sprite_get_width (c16_sprite_t);
 RILEY_API uint16_t c16_sprite_get_height (c16_sprite_t);
-
 RILEY_API uint16_t* c16_sprite_get_data (c16_sprite_t);
 
 typedef struct blk_t {

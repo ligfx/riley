@@ -1,9 +1,9 @@
 CC=clang
 CFLAGS +=-fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror
 
-all: libriley.so libriley-sdl.so include main
+all: libriley.so libriley-sdl.so libriley-cairo.so include main
 
-include: riley.h sdl.h
+include: riley.h sdl.h cairo.h
 	@mkdir -p include/riley
 	@echo " CP $^ => include/riley/"
 	@cp $^ include/riley
@@ -24,11 +24,16 @@ libriley-sdl.so: sdl.o libriley.so
 	@${CC} -shared $^ -o $@ -L. -lriley ${LDFLAGS}
 	@echo " LD $^ => $@"
 
+libriley-cairo.so: cairo.o libriley.so
+	@${CC} -shared $^ -o $@ -L. -lriley ${LDFLAGS}
+	@echo " LD $^ => $@"
+
 %.o: %.c
 	@${CC} -g -c $^ ${CFLAGS}
 	@echo " CC $^ => $@"
 
 clean:
-	-rm main libriley.so libriley-sdl.so
+	-rm main libriley.so libriley-sdl.so libriley-cairo.so
 	-rm -frv *.o
 	-rm -frv include
+	-rm *~
