@@ -41,6 +41,7 @@ typedef struct c16_t {
 } c16_t;
 
 RILEY_API c16_t* c16_new (c16_format_t);
+RILEY_API void c16_destroy (c16_t*);
 
 RILEY_API c16_format_t c16_get_format (c16_t*);
 
@@ -62,6 +63,8 @@ typedef struct blk_t {
 } blk_t;
 
 RILEY_API blk_t* blk_new(c16_format_t, uint16_t width, uint16_t height, uint16_t *data);
+RILEY_API void blk_destroy (blk_t*);
+
 RILEY_API c16_format_t blk_get_format (blk_t*);
 RILEY_API uint16_t blk_get_width (blk_t*);
 RILEY_API uint16_t blk_get_height (blk_t*);

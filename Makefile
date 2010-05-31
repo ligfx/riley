@@ -1,20 +1,20 @@
 CC=clang
-CFLAGS +=-fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror
+CFLAGS +=-fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror -g
 
-all: libriley.so libriley-sdl.so libriley-cairo.so include main
+all: libriley.so libriley-sdl.so libriley-cairo.so include c16topng
 
 include: riley.h sdl.h cairo.h
 	@mkdir -p include/riley
 	@echo " CP $^ => include/riley/"
 	@cp $^ include/riley
 
-main: main.o libriley.so libriley-sdl.so
-	@${CC} -g $^ -lSDL -L. -lriley -lriley-sdl -o $@ -Wl,-rpath,. ${LDFLAGS}
+c16topng: c16topng.o libriley.so libriley-cairo.so
+	@${CC} $^ `pkg-config cairo glib-2.0 --libs` -L. -lriley -lriley-cairo -o $@ -Wl,-rpath,. ${LDFLAGS}
 	@echo " LD $^ => $@"
 
-main.o: include main.c
-	@${CC} -g -c -Iinclude main.c ${CFLAGS}
-	@echo " CC main.c => $@"
+c16topng.o: include c16topng.c
+	@${CC} -c -Iinclude c16topng.c ${CFLAGS} `pkg-config glib-2.0 --cflags`
+	@echo " CC c16topng.c => $@"
 
 libriley.so: riley.o
 	@${CC} -shared $^ -o $@ ${LDFLAGS}
@@ -33,7 +33,7 @@ libriley-cairo.so: cairo.o libriley.so
 	@echo " CC $^ => $@"
 
 clean:
-	-rm main libriley.so libriley-sdl.so libriley-cairo.so
+	-rm c16topng libriley.so libriley-sdl.so libriley-cairo.so
 	-rm -frv *.o
 	-rm -frv include
 	-rm *~

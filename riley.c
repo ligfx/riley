@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <stdbool.h>
 
+#define ENSURE(condition) if (!(condition)) return NULL
+
 c16_t*
 c16_new (c16_format_t format)
 {
@@ -12,6 +14,14 @@ c16_new (c16_format_t format)
     image->sprites = NULL;
   }
   return image;
+}
+
+void
+c16_destroy (c16_t *c16)
+{
+  for (int i = 0; i < c16->count; ++i)
+    free (c16->sprites[i].data);
+  free (c16);
 }
 
 c16_format_t
@@ -81,14 +91,14 @@ c16_new_from_file (FILE *fp)
   bool is_565;
   uint16_t count;
   
-  assert (fread (&header, 1, 4, fp) == 4);
+  ENSURE(fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header & 0x2); // Is a c16_t File
+  ENSURE(header & 0x2); // Is a C16 File
   
   image = c16_new (is_565? C16_565 : C16_555);
   
-  assert (fread (&count, 1, 2, fp) == 2);
+  ENSURE (fread (&count, 1, 2, fp) == 2);
   c16_set_number_of_sprites (image, count);
   
   for (int i = 0; i < count; ++i) {
@@ -99,18 +109,18 @@ c16_new_from_file (FILE *fp)
     uint16_t *data_pos = NULL;
     int j;
     
-    assert (fread (&first_line, 1, 4, fp) == 4);
-    assert (fread (&width, 1, 2, fp) == 2);
-    assert (fread (&height, 1, 2, fp) == 2);
+    ENSURE (fread (&first_line, 1, 4, fp) == 4);
+    ENSURE (fread (&width, 1, 2, fp) == 2);
+    ENSURE (fread (&height, 1, 2, fp) == 2);
     
     data = malloc (width * height * 2);
     data_pos = (uint16_t*)data;
-    assert (data);
+    ENSURE (data);
     
     uint32_t offsets[height];
     offsets[0] = first_line;
     for (j = 1; j < height; ++j)
-      assert (fread (&offsets[j], 1, 4, fp) == 4);
+      ENSURE (fread (&offsets[j], 1, 4, fp) == 4);
     
     long mark = ftell (fp);
     
@@ -118,12 +128,12 @@ c16_new_from_file (FILE *fp)
       fseek (fp, offsets[j], SEEK_SET);
       while (true) {
         uint16_t tag;
-        assert (fread (&tag, 1, 2, fp) == 2);
+        ENSURE (fread (&tag, 1, 2, fp) == 2);
         if (tag == 0) break;
         bool color = tag & 0x0001;
         uint16_t length = (tag & 0xFFFE) >> 1;
         if (color) {
-          assert (fread (data_pos, 1, length * 2, fp) == length * 2);
+          ENSURE (fread (data_pos, 1, length * 2, fp) == length * 2);
         } else {
           memset (data_pos, 0, length * 2);
         }
@@ -137,8 +147,6 @@ c16_new_from_file (FILE *fp)
     fseek (fp, mark, SEEK_SET);
   }
   
-  fclose (fp);
-  
   return image;
 }
 
@@ -151,14 +159,14 @@ s16_new_from_file (FILE *fp)
   bool is_565;
   uint16_t count;
   
-  assert (fread (&header, 1, 4, fp) == 4);
+  ENSURE (fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header ^ 0x2); // Is an S16 File; not c16_t
+  ENSURE (header ^ 0x2); // Is an S16 File; not C16
   
   image = c16_new (is_565? C16_565 : C16_555);
   
-  assert (fread (&count, 1, 2, fp) == 2);
+  ENSURE (fread (&count, 1, 2, fp) == 2);
   c16_set_number_of_sprites (image, count);
   
   for (int i = 0; i < count; ++i) {
@@ -167,23 +175,21 @@ s16_new_from_file (FILE *fp)
     uint16_t width, height;
     char *data = NULL;
     
-    assert (fread (&first_line, 1, 4, fp) == 4);
-    assert (fread (&width, 1, 2, fp) == 2);
-    assert (fread (&height, 1, 2, fp) == 2);
+    ENSURE (fread (&first_line, 1, 4, fp) == 4);
+    ENSURE (fread (&width, 1, 2, fp) == 2);
+    ENSURE (fread (&height, 1, 2, fp) == 2);
     
     data = malloc (width * height * 2);
-    assert (data);
+    ENSURE (data);
     
     long mark = ftell (fp);
     fseek (fp, first_line, SEEK_SET);
-    assert (fread (data, 1, width * height * 2, fp) == width * height * 2);
+    ENSURE (fread (data, 1, width * height * 2, fp) == width * height * 2);
     fseek (fp, mark, SEEK_SET);
     
     sprite = c16_sprite_make (width, height, (uint16_t*)data);
     c16_set_sprite (image, i, sprite);
   }
-  
-  fclose (fp);
   
   return image;
 }
@@ -200,6 +206,13 @@ blk_new (c16_format_t format, uint16_t width, uint16_t height, uint16_t *data)
   return blk;
 }
 
+void
+blk_destroy (blk_t *blk)
+{
+  free (blk->data);
+  free (blk);
+}
+
 blk_t*
 blk_new_from_file (FILE *fp)
 {
@@ -211,29 +224,30 @@ blk_new_from_file (FILE *fp)
   char* data;
   int i;
   
-  assert (fread (&header, 1, 4, fp) == 4);
+  ENSURE (fread (&header, 1, 4, fp) == 4);
   
   is_565 = header & 0x1;
-  assert (header ^ 0x2); // Is an S16 File; not c16_t
+  ENSURE (header ^ 0x2); // Is an S16 File; not C16
   
-  assert (fread (&bgwidth, 1, 2, fp) == 2);
-  assert (fread (&bgheight, 1, 2, fp) == 2);
-  assert (fread (&count, 1, 2, fp) == 2);
+  ENSURE (fread (&bgwidth, 1, 2, fp) == 2);
+  ENSURE (fread (&bgheight, 1, 2, fp) == 2);
+  ENSURE (fread (&count, 1, 2, fp) == 2);
   
   uint32_t offsets[count];
   for (i = 0; i < count; ++i) {
     uint32_t off;
-    assert (fread (&off, 1, 4, fp) == 4);
+    ENSURE (fread (&off, 1, 4, fp) == 4);
     offsets[i] = off + 4; // Because of the extra width and height in header
     
     uint16_t width, height;
-    assert (fread (&width, 1, 2, fp) == 2);
-    assert (fread (&height, 1, 2, fp) == 2);
-    assert (width == 128);
-    assert (height == 128);
+    ENSURE (fread (&width, 1, 2, fp) == 2);
+    ENSURE (fread (&height, 1, 2, fp) == 2);
+    ENSURE (width == 128);
+    ENSURE (height == 128);
   }
   
   data = malloc (sizeof (uint16_t) * bgwidth * 128 * bgheight * 128);
+  ENSURE (data);
   /*
     So sprites are arranged top-to-bottom, left-to-right. That is, sprite 1 is
     at (0,0) and sprite 2 is at (0, 1). Complicated? Yes
@@ -243,7 +257,7 @@ blk_new_from_file (FILE *fp)
     fseek (fp, offsets[i], SEEK_SET);
     
     for (int j = 0; j < 128; ++j) // For each pixel-row
-      assert (fread (data + j * bgwidth * 256 + (i % bgheight) * 128 * bgwidth * 256 + (i / bgheight) * 256, 1, 256, fp) == 256);
+      ENSURE (fread (data + j * bgwidth * 256 + (i % bgheight) * 128 * bgwidth * 256 + (i / bgheight) * 256, 1, 256, fp) == 256);
     
     fseek (fp, mark, SEEK_SET);
   }
