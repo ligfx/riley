@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS +=-fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror -g
+override CFLAGS := -fvisibility=hidden -fpic -ansi -Wall -Wno-comment -Werror -g $(CFLAGS)
 
 all: libriley.so libriley-sdl.so libriley-cairo.so include c16topng
 
