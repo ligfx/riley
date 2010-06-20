@@ -29,7 +29,7 @@ libriley-cairo.so: cairo.o libriley.so
 	@echo " LD $^ => $@"
 
 %.o: %.c
-	@${CC} -g -c $^ ${CFLAGS}
+	@${CC} $(CFLAGS) -c $^
 	@echo " CC $^ => $@"
 
 clean:
