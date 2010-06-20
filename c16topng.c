@@ -16,6 +16,11 @@ static GOptionEntry entries[] =
 	{ NULL }
 };
 
+static const gchar *summary = "Converts C16, S16, and BLK files into PNG files";
+static const gchar *description =
+  "Libriley version 0.1 under MIT License\n"
+  "Copyright (C) 2010 Michael Maltese <mchtly@gmail.com>\n";
+
 int
 main (int argc, char **argv)
 {
@@ -24,33 +29,26 @@ main (int argc, char **argv)
 	
 	context = g_option_context_new ("file");
 	g_option_context_add_main_entries (context, entries, NULL);
-	g_option_context_set_summary (context,
-	  "Converts C16, S16, and BLK files into PNG files");
-	g_option_context_set_description (context,
-	  "Libriley version 0.1 under MIT License\n"
-	  "Copyright (C) 2010 Michael Maltese <mchtly@gmail.com>\n");
+	g_option_context_set_summary (context, summary);
+	g_option_context_set_description (context, description);
 	if (!g_option_context_parse (context, &argc, &argv, &error))
 	{
-		g_printerr ("%s\n", error->message);
-		gchar *help = g_option_context_get_help (context, TRUE, NULL);
-		g_print ("%s\n", help);
-		g_free (help);
+		g_printerr ("%s\nRun with --help for more options\n", error->message);
 		g_free (context);
 		exit (1);
 	}
 	g_free (context);
 	
 	if (2 != argc) {
-	  g_printerr ("One (and only one) input file must be specified.\n");
-		gchar *help = g_option_context_get_help (context, TRUE, NULL);
-		g_print ("%s\n", help);
-		g_free (help);
+	  g_printerr (
+	    "One (and only one) input file must be specified.\n"
+	    "Run with --help for more options\n");
 	  exit (1);
 	}
 	char *input = argv[1];
 	
 	if (!g_file_test (input, G_FILE_TEST_EXISTS)) {
-	  g_printerr ("%s does not exist!\n", input);
+	  g_printerr ("File %s does not exist!\n", input);
 	  exit (1);
 	}
 	if (!g_file_test (input, G_FILE_TEST_IS_REGULAR)) {
@@ -62,7 +60,7 @@ main (int argc, char **argv)
 	 && !g_str_has_suffix(input, ".s16")
 	 && !g_str_has_suffix(input, ".blk"))
   {
-    g_printerr ("Cannot guess filetype of %s; make the filename ends in .c16,.s16, or .blk\n", input);
+    g_printerr ("Cannot guess filetype of %s; make sure the filename ends in .c16,.s16, or .blk\n", input);
     exit(1);
   }
 	
