@@ -63,9 +63,9 @@ main (int argc, char **argv)
     g_printerr ("Cannot guess filetype of %s; make sure the filename ends in .c16,.s16, or .blk\n", input);
     exit(1);
   }
-	
-	FILE *fp = fopen (input, "r");
-	if (!fp) {
+  
+  GMappedFile *file = g_mapped_file_new (input, FALSE, NULL);
+	if (!file) {
 	  g_printerr ("Could not open %s\n", input);
 	  exit (1);
 	}
@@ -76,8 +76,8 @@ main (int argc, char **argv)
 	
 	if (g_str_has_suffix (input, ".blk"))
 	{
-	  blk_t *blk = blk_new_from_file (fp);
-	  fclose (fp);
+	  blk_t *blk = blk_new_from_data (g_mapped_file_get_contents (file));
+	  g_mapped_file_unref (file);
 	  if (!blk) {
 	    g_printerr ("Could not load %s; bug or malformed BLK file?\n", input);
 	    exit (1);
@@ -100,9 +100,9 @@ main (int argc, char **argv)
 	      || g_str_has_suffix (input, ".s16"))
 	{
 	  c16_t *c16 = NULL;
-	  if (g_str_has_suffix (input, ".c16")) c16 = c16_new_from_file (fp);
-	  else c16 = s16_new_from_file (fp);
-	  fclose (fp);
+	  if (g_str_has_suffix (input, ".c16")) c16 = c16_new_from_data (g_mapped_file_get_contents (file));
+	  else c16 = s16_new_from_data (g_mapped_file_get_contents (file));
+	  g_mapped_file_unref (file);
 	  if (!c16) {
 	    g_printerr ("Could not load %s; bug or malformed C16/S16 file?\n", input);
 	    exit (1);
