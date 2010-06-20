@@ -73,10 +73,13 @@ RILEY_API uint16_t* blk_get_data (blk_t*);
 // ~ Helpers ~
 
 RILEY_API c16_t* c16_new_from_file (FILE*);
+RILEY_API c16_t* c16_new_from_data (void*);
 //RILEY_API void c16_write_to_file (C16*, FILE*);
 RILEY_API c16_t* s16_new_from_file (FILE*);
+RILEY_API c16_t* s16_new_from_data (void*);
 //RILEY_API void s16_write_to_file (C16*, FILE*);
 RILEY_API blk_t* blk_new_from_file (FILE*);
+RILEY_API blk_t* blk_new_from_data (void*);
 //RILEY_API void blk_write_to_file (BLK*, FILE*);
 
 // ~ Stream ~

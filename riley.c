@@ -161,6 +161,58 @@ blk_new_from_file (FILE *fp)
   return blk_new_from_stream (fp, file_iface); 
 }
 
+struct data_map {
+  void *data;
+  void *ptr;
+};
+
+size_t
+data_map_read (struct data_map *map, size_t n, void *buf)
+{
+  memcpy (buf, map->ptr, n);
+  map->ptr = ((char*)map->ptr) + n;
+  return n;
+}
+
+void
+data_map_seek (struct data_map *map, size_t mark)
+{
+  map->ptr = ((char*)map->data) + mark;
+}
+
+size_t
+data_map_tell (struct data_map *map)
+{
+  return ((char*)map->ptr) - ((char*)map->data);
+}
+
+static struct riley_stream data_iface = {
+  (riley_read_t) data_map_read,
+  (riley_seek_t) data_map_seek,
+  (riley_tell_t) data_map_tell
+};
+
+c16_t*
+c16_new_from_data (void *data)
+{
+  struct data_map map = { data, data };
+  return c16_new_from_stream (&map, data_iface);
+}
+
+c16_t*
+s16_new_from_data (void *data)
+{
+  struct data_map map = { data, data };
+  return s16_new_from_stream (&map, data_iface);
+}
+
+blk_t*
+blk_new_from_data (void *data)
+{
+  struct data_map map = { data, data };
+  return blk_new_from_stream (&map, data_iface);
+}
+
 #define READ(count, ptr) iface.read(stream, count, ptr)
 #define SEEK(mark) iface.seek(stream, mark)
 #define TELL(mark) iface.tell(stream)
