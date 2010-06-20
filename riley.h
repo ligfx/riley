@@ -79,6 +79,21 @@ RILEY_API c16_t* s16_new_from_file (FILE*);
 RILEY_API blk_t* blk_new_from_file (FILE*);
 //RILEY_API void blk_write_to_file (BLK*, FILE*);
 
+// ~ Stream ~
+
+typedef size_t (*riley_read_t) (void*, size_t n, void *buf);
+typedef void (*riley_seek_t) (void*, size_t mark);
+typedef size_t (*riley_tell_t) (void*);
+
+struct riley_stream {
+  riley_read_t read;
+  riley_seek_t seek;
+  riley_tell_t tell;
+};
+RILEY_API c16_t* c16_new_from_stream (void*, struct riley_stream);
+RILEY_API c16_t* s16_new_from_stream (void*, struct riley_stream);
+RILEY_API blk_t* blk_new_from_stream (void*, struct riley_stream);
+
 #ifdef __cplusplus
 }
 #endif
