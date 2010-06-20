@@ -72,16 +72,3 @@ blk_get_cairo (blk_t *blk)
 	
 	return surface;
 }
-
-int main () {
-  blk_t *blk = NULL;
-  
-  {
-    FILE *fp = fopen ("test.blk", "r");
-    assert (fp);
-    blk = blk_new_from_file (fp);
-    assert (blk);
-  }
-	
-	cairo_surface_write_to_png (blk_get_cairo (blk), "test.png");
-}
