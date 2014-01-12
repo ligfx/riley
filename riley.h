@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <SDL/SDL.h>
-
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef BUILDING_DLL
     #define RILEY_API __declspec(dllexport)

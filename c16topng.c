@@ -1,5 +1,5 @@
-#include <riley/riley.h>
-#include <riley/cairo.h>
+#include "riley.h"
+#include "cairo.h"
 
 #include <glib.h>
 
